@@ -90,23 +90,6 @@ const AchievementsWindow = () => {
           badgeColor: 'bg-green-600'
         }
       ]
-    },
-    {
-      category: 'リーダーシップ',
-      icon: 'leadership',
-      color: 'text-purple-400',
-      items: [
-        {
-          title: 'STEM研究部 部長',
-          details: [
-            '部員の技術指導およびプロジェクト管理経験',
-            'コンテスト運営や代表としての参加経験'
-          ],
-          date: '現在',
-          badge: '部長',
-          badgeColor: 'bg-red-500'
-        }
-      ]
     }
   ];
 
@@ -115,8 +98,7 @@ const AchievementsWindow = () => {
     contestsParticipated: achievements[0].items.length,
     ongoingProjects: achievements.find(cat => cat.category === '技術的成果')?.items.filter(item => 
       item.badge === '運用中' || item.badge === '独自手法'
-    ).length || 0,
-    leadershipRoles: achievements.find(cat => cat.category === 'リーダーシップ')?.items.length || 0
+    ).length || 0
   };
 
   return (
@@ -132,11 +114,10 @@ const AchievementsWindow = () => {
       </div>
 
       {/* 統計サマリー */}
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(4, 1fr)', gap:'12px', marginBottom:'16px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:'12px', marginBottom:'16px' }}>
         {[{label:'総実績数', value: stats.totalAchievements, color:'#facc15'},
           {label:'コンテスト参加', value: stats.contestsParticipated, color:'#60a5fa'},
-          {label:'進行中プロジェクト', value: stats.ongoingProjects, color:'#34d399'},
-          {label:'リーダーシップ', value: stats.leadershipRoles, color:'#c084fc'}].map((s)=> (
+          {label:'進行中プロジェクト', value: stats.ongoingProjects, color:'#34d399'}].map((s)=> (
           <div key={s.label} style={{ backgroundColor:'#1f2937', borderRadius:'8px', padding:'12px', textAlign:'center' }}>
             <div style={{ fontSize:'20px', fontWeight:700, color:s.color }}>{s.value}</div>
             <div style={{ fontSize:'12px', color:'#9ca3af' }}>{s.label}</div>
