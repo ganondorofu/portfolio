@@ -1,103 +1,149 @@
-import Image from "next/image";
+'use client';
+
+import React, { useState } from 'react';
+import TopBar from '@/components/TopBar';
+import Dock from '@/components/Dock';
+import Window from '@/components/Window';
+import ProfileWindow from '@/components/ProfileWindow';
+import SkillsWindow from '@/components/SkillsWindow';
+import ProjectsWindow from '@/components/ProjectsWindow';
+import AchievementsWindow from '@/components/AchievementsWindow';
+import ContactWindow from '@/components/ContactWindow';
+
+// Define the shape of a window object
+interface WindowState {
+  id: string;
+  title: string;
+  content: React.ReactNode;
+  position?: { x: number; y: number };
+  isMinimized?: boolean;
+  isMaximized?: boolean;
+}
+
+// Define the content for each window
+const windowContent: { [key: string]: Omit<WindowState, 'id'> } = {
+  about: {
+    title: 'About Me - yoneyone',
+    content: <ProfileWindow />,
+  },
+  skills: {
+    title: 'Skills & Tech Stack',
+    content: <SkillsWindow />,
+  },
+  projects: {
+    title: 'Projects - Portfolio',
+    content: <ProjectsWindow />,
+  },
+  achievements: {
+    title: 'Achievements & Awards',
+    content: <AchievementsWindow />,
+  },
+  contact: {
+    title: 'Contact Me',
+    content: <ContactWindow />,
+  },
+};
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [windows, setWindows] = useState<WindowState[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const getWindowPosition = (index: number) => {
+    const offset = index * 50;
+    return {
+      x: 100 + offset,
+      y: 80 + offset
+    };
+  };
+
+  const openWindow = (windowId: string) => {
+    const content = windowContent[windowId];
+    if (!content) return;
+
+    // 既に同タイプのウィンドウがあれば最小化解除して手前に出す
+    setWindows(prev => {
+      const existingIndex = prev.findIndex(w => w.id.startsWith(windowId + '-'));
+      if (existingIndex !== -1) {
+        const existing = prev[existingIndex];
+        // 最小化解除しつつ配列末尾に移動して前面表示
+        const without = [...prev.slice(0, existingIndex), ...prev.slice(existingIndex + 1)];
+        return [...without, { ...existing, isMinimized: false }];
+      }
+
+      const id = `${windowId}-${Date.now()}`;
+      const position = {
+        x: 80 + (prev.length * 30),
+        y: 50 + (prev.length * 30),
+      };
+      return [...prev, { id, ...content, position, isMinimized: false, isMaximized: false } as WindowState];
+    });
+  };
+
+  const closeWindow = (id: string) => {
+    setWindows(prevWindows => prevWindows.filter(win => win.id !== id));
+  };
+
+  const minimizeWindow = (id: string) => {
+    setWindows(prev => prev.map(w => w.id === id ? { ...w, isMinimized: true } : w));
+  };
+
+  const restoreWindow = (id: string) => {
+    setWindows(prev => prev.map(w => w.id === id ? { ...w, isMinimized: false, isMaximized: false } : w));
+  };
+
+  const toggleMaximize = (id: string) => {
+    setWindows(prev => prev.map(w => w.id === id ? { ...w, isMaximized: !w.isMaximized } : w));
+  };
+
+  return (
+    <main
+      style={{
+        position: 'relative',
+        height: '100vh',
+        width: '100%',
+        overflow: 'hidden',
+        // Ubuntu 20.04 系の壁紙トーンに近いグラデーション
+        background: 'radial-gradient(1200px 800px at 70% 30%, rgba(255,128,0,0.2), transparent 60%), radial-gradient(1000px 700px at 30% 70%, rgba(128,0,255,0.25), transparent 60%), linear-gradient(135deg, #2a0a3a 0%, #3a0d58 40%, #5c0d4f 70%, #6d1338 100%)',
+        color: '#ffffff',
+        fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif'
+      }}
+    >
+      <TopBar />
+      <Dock onIconClick={openWindow} />
+
+      {/* ウィンドウコンテナ（左ドック分のオフセット + トップバー分の余白） */}
+      <div
+        style={{
+          position: 'relative',
+          marginLeft: '80px', // 左ドック64px + 余白
+          paddingTop: '40px', // トップバー分の余白
+          height: '100%',
+        }}
+      >
+        {windows.map((win) => (
+          <Window
+            key={win.id}
+            title={win.title}
+            onClose={() => closeWindow(win.id)}
+            initialPosition={win.position}
+            isMinimized={win.isMinimized}
+            isMaximized={win.isMaximized}
+            onMinimize={() => minimizeWindow(win.id)}
+            onToggleMaximize={() => toggleMaximize(win.id)}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            {win.content}
+          </Window>
+        ))}
+
+        {/* タスクバー（最小化ウィンドウを表示） */}
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 12, display: 'flex', justifyContent: 'center', gap: '8px', pointerEvents: 'auto' }}>
+          {windows.filter(w => w.isMinimized).map(w => (
+            <button key={w.id} onClick={() => restoreWindow(w.id)} style={{ minWidth: 120, padding: '8px 12px', background: '#1f1f1f', border: '1px solid #4b5563', color: '#ffffff', borderRadius: 6, cursor: 'pointer' }}>
+              {w.title}
+            </button>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </div>
+    </main>
   );
 }
+
