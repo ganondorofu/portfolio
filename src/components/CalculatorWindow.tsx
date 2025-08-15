@@ -99,12 +99,10 @@ const CalculatorWindow = () => {
 
   const Button = ({ 
     onClick, 
-    className = '', 
     children, 
     style = {} 
   }: { 
     onClick: () => void; 
-    className?: string; 
     children: React.ReactNode; 
     style?: React.CSSProperties;
   }) => (

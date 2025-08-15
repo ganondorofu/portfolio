@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import AppHeader from './AppHeader';
 
 const ProfileWindow: React.FC = () => {
@@ -24,11 +24,11 @@ const ProfileWindow: React.FC = () => {
     setIsTyping(false);
   };
 
-  const mockFiles: Record<string, string> = {
+  const mockFiles = useMemo((): Record<string, string> => ({
     'README.md': '# README\nThis is a playful file preview for the portfolio.',
     'CV.pdf': 'Curriculum Vitae (preview): education and contact.',
     'about.txt': 'yoneyone — student / hobbyist developer\n\n学校: 愛知県立愛知総合工科高等学校\n所属: STEM研究部\nEmail: ganondorofu3143@outlook.com\n\n学習方針:\n🎯 実践重視: 実際に動くプロジェクトで学ぶ方針\n🔄 自動化: 開発・デプロイの自動化を進める\n🤖 AI活用: 知識のない分野や難しい課題にもAIを使って積極的に挑戦'
-  };
+  }), []);
 
   const runCommand = useCallback(async (raw: string) => {
     const cmd = raw.trim();

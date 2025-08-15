@@ -17,7 +17,7 @@ export default function NotFound() {
       <h1 style={{ fontSize: '4rem', margin: 0, color: '#f87171' }}>404</h1>
       <h2 style={{ fontSize: '1.5rem', margin: '1rem 0', fontWeight: 300 }}>Page Not Found</h2>
       <p style={{ color: '#9ca3af', marginBottom: '2rem' }}>
-        The page you're looking for doesn't exist.
+        The page you&apos;re looking for doesn&apos;t exist.
       </p>
       <button
         onClick={() => {

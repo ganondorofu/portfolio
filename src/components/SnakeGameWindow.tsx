@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import AppHeader from './AppHeader';
 
 interface Position {
@@ -10,7 +10,7 @@ type Direction = 'UP' | 'DOWN' | 'LEFT' | 'RIGHT';
 
 const SnakeGameWindow: React.FC = () => {
   const BOARD_SIZE = 20;
-  const INITIAL_SNAKE: Position[] = [{ x: 10, y: 10 }];
+  const INITIAL_SNAKE = useMemo(() => [{ x: 10, y: 10 }], []);
   const INITIAL_DIRECTION: Direction = 'RIGHT';
   const GAME_SPEED = 150;
 
