@@ -7,7 +7,6 @@ const ProfileWindow: React.FC = () => {
   const [displayedLines, setDisplayedLines] = useState<string[]>([]);
   const [currentTypingLine, setCurrentTypingLine] = useState<string>('');
   const [isTyping, setIsTyping] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const [demoRun, setDemoRun] = useState(false);
 
   // 一文字ずつタイピングする関数
@@ -34,7 +33,6 @@ const ProfileWindow: React.FC = () => {
   const runCommand = useCallback(async (raw: string) => {
     const cmd = raw.trim();
     if (!cmd) return;
-    setIsProcessing(true);
 
     setDisplayedLines(prev => [...prev, `$ ${cmd}`]);
 
@@ -75,8 +73,7 @@ const ProfileWindow: React.FC = () => {
       await typeText(`${cmd}: command not found`, 50);
     }
 
-    setIsProcessing(false);
-  }, []);
+  }, [mockFiles]);
 
   useEffect(() => {
     if (demoRun) return;
@@ -109,7 +106,7 @@ const ProfileWindow: React.FC = () => {
     return () => { 
       mounted = false; 
     };
-  }, []); // runCommandを依存配列から削除
+  }, [demoRun, runCommand]); // runCommandを依存配列に追加
 
   const promptStyle: React.CSSProperties = { color: '#21d07a', marginRight: 8, fontWeight: 700 };
 

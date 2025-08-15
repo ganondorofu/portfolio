@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 type WindowProps = {
   title: string;
@@ -81,7 +81,7 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
     (document.body.style as unknown as Record<string, string>).msUserSelect = 'none';
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
+  const handleMouseMove = useCallback((e: MouseEvent) => {
     if (isDragging && !isMaximized) {
       e.preventDefault();
       const newX = e.clientX - dragOffsetRef.current.x;
@@ -137,9 +137,9 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
       setPosition({ x: newX, y: newY });
       targetRef.current = { x: newX, y: newY };
     }
-  };
+  }, [isDragging, isMaximized, size.width, size.height, isResizing, resizeDirection, position.x, position.y]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
     setIsResizing(false);
     setResizeDirection('');
@@ -151,7 +151,7 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
     (document.body.style as unknown as Record<string, string>).msUserSelect = '';
     document.body.style.cursor = '';
     document.body.classList.remove('dragging');
-  };
+  }, []);
 
   const handleClose = () => {
     setIsClosing(true);

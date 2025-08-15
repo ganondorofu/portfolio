@@ -16,7 +16,7 @@ const SnakeGameWindow: React.FC = () => {
 
   const [snake, setSnake] = useState<Position[]>(INITIAL_SNAKE);
   const [food, setFood] = useState<Position>({ x: 15, y: 15 });
-  const [direction, setDirection] = useState<Direction>(INITIAL_DIRECTION);
+  const directionRef = useRef<Direction>(INITIAL_DIRECTION);
   const [gameStatus, setGameStatus] = useState<'playing' | 'paused' | 'gameOver'>('paused');
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(() => {
@@ -26,8 +26,7 @@ const SnakeGameWindow: React.FC = () => {
     return 0;
   });
 
-  const gameLoopRef = useRef<NodeJS.Timeout>();
-  const directionRef = useRef<Direction>(INITIAL_DIRECTION);
+  const gameLoopRef = useRef<NodeJS.Timeout | null>(null);
 
   const generateFood = useCallback((snakeBody: Position[]): Position => {
     let newFood: Position;
@@ -101,11 +100,10 @@ const SnakeGameWindow: React.FC = () => {
   const resetGame = useCallback(() => {
     setSnake(INITIAL_SNAKE);
     setFood({ x: 15, y: 15 });
-    setDirection(INITIAL_DIRECTION);
     directionRef.current = INITIAL_DIRECTION;
     setGameStatus('paused');
     setScore(0);
-  }, []);
+  }, [INITIAL_SNAKE]);
 
   const handleKeyPress = useCallback((e: KeyboardEvent) => {
     if (gameStatus === 'gameOver') return;
@@ -151,7 +149,6 @@ const SnakeGameWindow: React.FC = () => {
 
     if (newDirection) {
       e.preventDefault();
-      setDirection(newDirection);
       directionRef.current = newDirection;
     }
   }, [gameStatus, startGame, pauseGame]);
