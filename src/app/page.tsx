@@ -46,37 +46,52 @@ const windowContent: { [key: string]: Omit<WindowState, 'id'> } = {
 
 export default function Home() {
   const [windows, setWindows] = useState<WindowState[]>([]);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   // 初期表示でAboutウィンドウを開く
   useEffect(() => {
+    if (isInitialized) return;
+    
     const content = windowContent['about'];
-    if (!content) return;
+    if (!content) {
+      setIsInitialized(true);
+      return;
+    }
 
     const id = `about-${Date.now()}`;
     const position = { x: 80, y: 50 };
     setWindows([{ id, ...content, position, isMinimized: false, isMaximized: false } as WindowState]);
-  }, []);
+    setIsInitialized(true);
+  }, [isInitialized]);
 
   const openWindow = (windowId: string) => {
+    console.log('Opening window:', windowId); // デバッグログ
     const content = windowContent[windowId];
-    if (!content) return;
+    if (!content) {
+      console.error('Window content not found for:', windowId);
+      return;
+    }
 
     // 既に同タイプのウィンドウがあれば最小化解除して手前に出す
     setWindows(prev => {
       const existingIndex = prev.findIndex(w => w.id.startsWith(windowId + '-'));
       if (existingIndex !== -1) {
+        console.log('Restoring existing window:', windowId);
         const existing = prev[existingIndex];
         // 最小化解除しつつ配列末尾に移動して前面表示
         const without = [...prev.slice(0, existingIndex), ...prev.slice(existingIndex + 1)];
         return [...without, { ...existing, isMinimized: false }];
       }
 
+      console.log('Creating new window:', windowId); // デバッグログ
       const id = `${windowId}-${Date.now()}`;
       const position = {
         x: 80 + (prev.length * 30),
         y: 50 + (prev.length * 30),
       };
-      return [...prev, { id, ...content, position, isMinimized: false, isMaximized: false } as WindowState];
+      const newWindow = { id, ...content, position, isMinimized: false, isMaximized: false } as WindowState;
+      console.log('New window created:', newWindow); // デバッグログ
+      return [...prev, newWindow];
     });
   };
 
