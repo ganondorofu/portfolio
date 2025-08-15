@@ -40,7 +40,7 @@ const ProfileWindow: React.FC = () => {
     'about.txt': `student / hobbyist developer
 
 学校: 愛知県立愛知総合工科高等学校
-所属: STEM研究部（部長）
+所属: STEM研究部
 Email: ganondorofu3143@outlook.com
 
 専門領域: フロントエンド、バックエンド、インフラ
