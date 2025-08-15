@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import AppHeader from './AppHeader';
 
 const ProfileWindow: React.FC = () => {
@@ -14,7 +14,7 @@ const ProfileWindow: React.FC = () => {
     'about.txt': 'yoneyone — student / hobbyist developer\n\n学校: 愛知県立愛知総合工科高等学校\n所属: STEM研究部\nEmail: ganondorofu3143@outlook.com'
   } as Record<string, string>;
 
-  const runCommand = async (raw: string) => {
+  const runCommand = useCallback(async (raw: string) => {
     const cmd = raw.trim();
     if (!cmd) return;
     setIsProcessing(true);
@@ -65,7 +65,7 @@ const ProfileWindow: React.FC = () => {
     }
 
     setIsProcessing(false);
-  };
+  }, [mockFiles]);
 
   // Auto demo on mount
   useEffect(() => {

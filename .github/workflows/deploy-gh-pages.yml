@@ -22,12 +22,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build (next build) and export static files (next export)
-        run: |
-          npm run build
-          npm run export
-        # If your site is served under a path (e.g. username.github.io/repo),
-        # set NEXT_PUBLIC_BASE_PATH or adjust `next.config.js` accordingly.
+      - name: Build and export static files
+        run: npm run build
+        # Next.js 15 with output: 'export' automatically generates static files
 
       - name: Deploy to GitHub Pages (gh-pages)
         uses: peaceiris/actions-gh-pages@v3

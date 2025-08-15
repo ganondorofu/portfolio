@@ -93,7 +93,7 @@ const Window = ({ title, children, onClose, initialPosition, isMinimized = false
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, handleMouseMove, handleMouseUp]);
 
   // Smooth animation loop to interpolate position -> targetRef
   useEffect(() => {
