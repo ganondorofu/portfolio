@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TopBar from '@/components/TopBar';
 import Dock from '@/components/Dock';
 import Window from '@/components/Window';
@@ -46,6 +46,16 @@ const windowContent: { [key: string]: Omit<WindowState, 'id'> } = {
 
 export default function Home() {
   const [windows, setWindows] = useState<WindowState[]>([]);
+
+  // 初期表示でAboutウィンドウを開く
+  useEffect(() => {
+    const content = windowContent['about'];
+    if (!content) return;
+
+    const id = `about-${Date.now()}`;
+    const position = { x: 80, y: 50 };
+    setWindows([{ id, ...content, position, isMinimized: false, isMaximized: false } as WindowState]);
+  }, []);
 
   const openWindow = (windowId: string) => {
     const content = windowContent[windowId];

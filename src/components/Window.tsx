@@ -142,35 +142,35 @@ const Window = ({ title, children, onClose, initialPosition, isMinimized = false
         opacity: isClosing ? 0 : 1,
         zIndex: 1000,
         backgroundColor: '#3c3c3c',
-        border: isMaximized ? 'none' : '1px solid #555555',
-        borderRadius: isMaximized ? 0 : 8,
+        border: isMaximized ? 'none' : '1px solid #464646',
+        borderRadius: isMaximized ? 0 : '8px',
         color: '#ffffff'
       }}
     >
-      {/* Ubuntu-style Title Bar */}
+      {/* Windows-style Title Bar */}
       <div
         onMouseDown={handleMouseDown}
         style={{ 
-          height: '40px',
+          height: '32px',
           display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-          padding: '0 16px',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 16px 0 12px',
           cursor: 'move',
-          backgroundColor: '#2d2d2d',
+          backgroundColor: '#323232',
           borderTopLeftRadius: '8px',
           borderTopRightRadius: '8px',
-          borderBottom: '1px solid #555555',
+          borderBottom: '1px solid #464646',
           color: '#ffffff',
           userSelect: 'none',
           WebkitUserSelect: 'none'
         }}
       >
-        {/* Title (Ubuntu GNOMEは左寄せが多い) */}
+        {/* Title */}
         <span style={{ 
-          fontWeight: 500,
-          fontSize: '14px',
-          color: 'white',
+          fontWeight: 400,
+          fontSize: '13px',
+          color: '#ffffff',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
           whiteSpace: 'nowrap'
@@ -178,38 +178,100 @@ const Window = ({ title, children, onClose, initialPosition, isMinimized = false
           {title}
         </span>
 
-        {/* Controls on the right - Ubuntu style */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }} onMouseDown={(e) => e.stopPropagation()}>
+        {/* Controls on the right - Windows style */}
+        <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }} onMouseDown={(e) => e.stopPropagation()}>
           <button
             title="Minimize"
             aria-label="Minimize"
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '28px', borderRadius: '6px', background: 'transparent', border: 'none', color: '#d1d5db', cursor: 'pointer' }}
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              width: '46px', 
+              height: '32px', 
+              background: 'transparent', 
+              border: 'none', 
+              color: '#ffffff', 
+              cursor: 'pointer',
+              transition: 'background-color 0.1s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
             onClick={() => { if (onMinimize) onMinimize(); }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="4" y="11" width="16" height="2" fill="#d1d5db" />
+            <svg width="10" height="1" viewBox="0 0 10 1" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="10" height="1" fill="currentColor" />
             </svg>
           </button>
 
           <button
-            title="Maximize"
-            aria-label="Maximize"
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '28px', borderRadius: '6px', background: 'transparent', border: 'none', color: '#d1d5db', cursor: 'pointer' }}
+            title={isMaximized ? "Restore Down" : "Maximize"}
+            aria-label={isMaximized ? "Restore Down" : "Maximize"}
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              width: '46px', 
+              height: '32px', 
+              background: 'transparent', 
+              border: 'none', 
+              color: '#ffffff', 
+              cursor: 'pointer',
+              transition: 'background-color 0.1s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
             onClick={() => { if (onToggleMaximize) onToggleMaximize(); }}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="4" y="4" width="16" height="16" stroke="#d1d5db" strokeWidth="1.5" rx="1" />
-            </svg>
+            {isMaximized ? (
+              // Restore icon (two overlapping squares)
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="0" width="8" height="8" stroke="currentColor" strokeWidth="1" fill="none" />
+                <rect x="0" y="2" width="8" height="8" stroke="currentColor" strokeWidth="1" fill="none" />
+              </svg>
+            ) : (
+              // Maximize icon (single square)
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="0" y="0" width="10" height="10" stroke="currentColor" strokeWidth="1" fill="none" />
+              </svg>
+            )}
           </button>
 
           <button
             title="Close"
             aria-label="Close"
-            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '36px', height: '28px', borderRadius: '6px', background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer' }}
+            style={{ 
+              display: 'inline-flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              width: '46px', 
+              height: '32px', 
+              background: 'transparent', 
+              border: 'none', 
+              color: '#ffffff', 
+              cursor: 'pointer',
+              transition: 'background-color 0.1s ease'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#e81123';
+              e.currentTarget.style.color = '#ffffff';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.color = '#ffffff';
+            }}
             onClick={handleClose}
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6 6L18 18M6 18L18 6" stroke="#f87171" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M0.5 0.5L9.5 9.5M0.5 9.5L9.5 0.5" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
         </div>

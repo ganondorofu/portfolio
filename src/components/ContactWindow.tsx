@@ -28,15 +28,7 @@ const ContactWindow = () => {
       return;
     }
 
-    // メールクライアントを開く
-    const subject = encodeURIComponent(formData.subject || 'ポートフォリオサイトからのお問い合わせ');
-    const body = encodeURIComponent(
-      `お名前: ${formData.name}\nメールアドレス: ${formData.email}\n\nメッセージ:\n${formData.message}`
-    );
-    
-    window.open(`mailto:ganondorofu3143@outlook.com?subject=${subject}&body=${body}`);
-    
-    // フォーム送信完了状態に
+    // フォーム送信の見た目だけ（実際の送信機能なし）
     setIsSubmitted(true);
     
     // 3秒後にリセット
@@ -63,7 +55,7 @@ const ContactWindow = () => {
             }}>
               <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
               <h2 style={{ color: '#10b981', marginBottom: 8 }}>送信完了！</h2>
-              <p style={{ color: '#9ca3af' }}>メールクライアントが開きます。ありがとうございました！</p>
+              <p style={{ color: '#9ca3af' }}>お問い合わせありがとうございました！後日ご連絡いたします。</p>
             </div>
           ) : (
             <>
@@ -246,7 +238,7 @@ const ContactWindow = () => {
                   marginTop: 12,
                   textAlign: 'center'
                 }}>
-                  ※ 送信ボタンを押すとメールクライアントが起動します
+                  ※ 現在はデモ版のため、実際の送信は行われません
                 </p>
               </div>
             </>
