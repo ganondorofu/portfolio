@@ -9,29 +9,7 @@ const ContactWindow = () => {
     message: ''
   });
 
-  const contactInfo = [
-    {
-      platform: 'Email',
-      value: 'ganondorofu3143@outlook.com',
-      icon: '✉️',
-      link: 'mailto:ganondorofu3143@outlook.com',
-      description: '直接メールでのご連絡'
-    },
-    {
-      platform: 'GitHub',
-      value: 'ganondorofu',
-      icon: '📁',
-      link: 'https://github.com/ganondorofu',
-      description: 'プロジェクトとコード'
-    },
-    {
-      platform: 'Scratch',
-      value: 'ganondorofu',
-      icon: '🐱',
-      link: 'https://scratch.mit.edu/users/ganondorofu/',
-      description: 'プログラミング学習履歴'
-    }
-  ];
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -43,138 +21,236 @@ const ContactWindow = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // メールクライアントを開くためのmailto URLを生成
+    
+    // 簡単なバリデーション
+    if (!formData.name || !formData.email || !formData.message) {
+      alert('お名前、メールアドレス、メッセージは必須です。');
+      return;
+    }
+
+    // メールクライアントを開く
     const subject = encodeURIComponent(formData.subject || 'ポートフォリオサイトからのお問い合わせ');
     const body = encodeURIComponent(
       `お名前: ${formData.name}\nメールアドレス: ${formData.email}\n\nメッセージ:\n${formData.message}`
     );
-    const mailtoURL = `mailto:ganondorofu3143@outlook.com?subject=${subject}&body=${body}`;
-    window.open(mailtoURL);
+    
+    window.open(`mailto:ganondorofu3143@outlook.com?subject=${subject}&body=${body}`);
+    
+    // フォーム送信完了状態に
+    setIsSubmitted(true);
+    
+    // 3秒後にリセット
+    setTimeout(() => {
+      setIsSubmitted(false);
+      setFormData({ name: '', email: '', subject: '', message: '' });
+    }, 3000);
   };
 
   return (
-    <div style={{ display:'flex', flexDirection:'column', gap:'24px' }}>
-      <AppHeader icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-        <path d="M3 8l9 6 9-6" stroke="#ffffff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-        <path d="M21 6H3v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6z" stroke="#ffffff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-      </svg>} title="Contact" subtitle="Contact information and form" />
-
-      <div style={{ textAlign:'center' }}>
-        <h1 style={{ fontSize:'20px', fontWeight:700, marginBottom:'8px' }}>Contact</h1>
-        <p style={{ color:'#d1d5db', fontSize:'12px' }}>Contact methods and a simple contact form.</p>
-      </div>
-
-      {/* 連絡先情報 */}
-      <div style={{ border:'1px solid #4b5563', borderRadius:'8px', padding:'16px', backgroundColor:'#2a2a2a' }}>
-        <h2 style={{ fontSize:'16px', fontWeight:600, marginBottom:'12px', color:'#60a5fa' }}>連絡先</h2>
-        <div style={{ display:'grid', gap:'12px' }}>
-          {contactInfo.map((contact, index) => (
-            <a
-              key={index}
-              href={contact.link}
-              target={contact.platform !== 'Email' ? '_blank' : '_self'}
-              rel={contact.platform !== 'Email' ? 'noopener noreferrer' : undefined}
-              style={{ display:'flex', alignItems:'center', padding:'12px', backgroundColor:'#1f2937', borderRadius:'8px', textDecoration:'none', color:'#e5e7eb' }}
-            >
-              <div style={{ width:'48px', height:'48px', backgroundColor:'#374151', borderRadius:'8px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'20px', marginRight:'12px' }}>
-                {/* icon placeholder */}
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="12" x="3" y="6" fill="#ffffff" opacity="0.06" rx="2"/></svg>
+    <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <AppHeader title="Contact" subtitle="お問い合わせフォーム" />
+      
+      <div style={{ flex: 1, padding: 16, overflow: 'auto' }}>
+        <div style={{ maxWidth: 600, margin: '0 auto' }}>
+          
+          {isSubmitted ? (
+            <div style={{ 
+              textAlign: 'center', 
+              padding: 40,
+              backgroundColor: '#1f2937',
+              borderRadius: 12,
+              border: '1px solid #10b981'
+            }}>
+              <div style={{ fontSize: 48, marginBottom: 16 }}>✅</div>
+              <h2 style={{ color: '#10b981', marginBottom: 8 }}>送信完了！</h2>
+              <p style={{ color: '#9ca3af' }}>メールクライアントが開きます。ありがとうございました！</p>
+            </div>
+          ) : (
+            <>
+              {/* 基本情報 */}
+              <div style={{ 
+                backgroundColor: '#1f2937', 
+                padding: 20, 
+                borderRadius: 12, 
+                marginBottom: 20,
+                border: '1px solid #374151'
+              }}>
+                <h2 style={{ color: '#60a5fa', marginBottom: 12, fontSize: 18 }}>📧 連絡先</h2>
+                <p style={{ color: '#d1d5db', marginBottom: 8 }}>
+                  <strong>Email:</strong> ganondorofu3143@outlook.com
+                </p>
+                <p style={{ color: '#d1d5db', marginBottom: 8 }}>
+                  <strong>GitHub:</strong> <a href="https://github.com/ganondorofu" target="_blank" rel="noopener noreferrer" style={{ color: '#60a5fa' }}>@ganondorofu</a>
+                </p>
+                <p style={{ color: '#9ca3af', fontSize: 14 }}>
+                  技術的な質問や共同プロジェクトのお誘いなど、お気軽にどうぞ！
+                </p>
               </div>
-              <div style={{ flex:1 }}>
-                <div style={{ fontWeight:600, color:'#fff' }}>{contact.platform}</div>
-                <div style={{ fontSize:'12px', color:'#93c5fd' }}>{contact.value}</div>
-                <div style={{ fontSize:'12px', color:'#9ca3af' }}>{contact.description}</div>
+
+              {/* お問い合わせフォーム */}
+              <div style={{ 
+                backgroundColor: '#1f2937', 
+                padding: 20, 
+                borderRadius: 12,
+                border: '1px solid #374151'
+              }}>
+                <h2 style={{ color: '#34d399', marginBottom: 16, fontSize: 18 }}>📝 お問い合わせフォーム</h2>
+                
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                    <div>
+                      <label style={{ 
+                        display: 'block', 
+                        color: '#d1d5db', 
+                        marginBottom: 8, 
+                        fontSize: 14,
+                        fontWeight: 600
+                      }}>
+                        お名前 *
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleInputChange}
+                        required
+                        style={{ 
+                          width: '100%', 
+                          padding: '12px 16px', 
+                          backgroundColor: '#111827', 
+                          border: '1px solid #4b5563', 
+                          borderRadius: 8, 
+                          color: '#fff',
+                          fontSize: 14,
+                          outline: 'none'
+                        }}
+                        placeholder="山田太郎"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label style={{ 
+                        display: 'block', 
+                        color: '#d1d5db', 
+                        marginBottom: 8, 
+                        fontSize: 14,
+                        fontWeight: 600
+                      }}>
+                        メールアドレス *
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        required
+                        style={{ 
+                          width: '100%', 
+                          padding: '12px 16px', 
+                          backgroundColor: '#111827', 
+                          border: '1px solid #4b5563', 
+                          borderRadius: 8, 
+                          color: '#fff',
+                          fontSize: 14,
+                          outline: 'none'
+                        }}
+                        placeholder="example@email.com"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      color: '#d1d5db', 
+                      marginBottom: 8, 
+                      fontSize: 14,
+                      fontWeight: 600
+                    }}>
+                      件名
+                    </label>
+                    <input
+                      type="text"
+                      name="subject"
+                      value={formData.subject}
+                      onChange={handleInputChange}
+                      style={{ 
+                        width: '100%', 
+                        padding: '12px 16px', 
+                        backgroundColor: '#111827', 
+                        border: '1px solid #4b5563', 
+                        borderRadius: 8, 
+                        color: '#fff',
+                        fontSize: 14,
+                        outline: 'none'
+                      }}
+                      placeholder="お問い合わせの件名"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label style={{ 
+                      display: 'block', 
+                      color: '#d1d5db', 
+                      marginBottom: 8, 
+                      fontSize: 14,
+                      fontWeight: 600
+                    }}>
+                      メッセージ *
+                    </label>
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleInputChange}
+                      required
+                      rows={5}
+                      style={{ 
+                        width: '100%', 
+                        padding: '12px 16px', 
+                        backgroundColor: '#111827', 
+                        border: '1px solid #4b5563', 
+                        borderRadius: 8, 
+                        color: '#fff',
+                        fontSize: 14,
+                        outline: 'none',
+                        resize: 'vertical',
+                        fontFamily: 'inherit'
+                      }}
+                      placeholder="お問い合わせ内容をお書きください..."
+                    />
+                  </div>
+                  
+                  <button 
+                    type="submit" 
+                    style={{ 
+                      backgroundColor: '#2563eb', 
+                      color: '#fff', 
+                      fontWeight: 600, 
+                      padding: '12px 24px', 
+                      borderRadius: 8, 
+                      border: 'none', 
+                      cursor: 'pointer',
+                      fontSize: 16,
+                      transition: 'background-color 0.2s'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#1d4ed8'}
+                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#2563eb'}
+                  >
+                    📤 送信する
+                  </button>
+                </form>
+                
+                <p style={{ 
+                  fontSize: 12, 
+                  color: '#9ca3af', 
+                  marginTop: 12,
+                  textAlign: 'center'
+                }}>
+                  ※ 送信ボタンを押すとメールクライアントが起動します
+                </p>
               </div>
-              <div style={{ color:'#9ca3af' }}>→</div>
-            </a>
-          ))}
-        </div>
-      </div>
-
-      {/* お問い合わせフォーム */}
-      <div style={{ border:'1px solid #4b5563', borderRadius:'8px', padding:'16px', backgroundColor:'#2a2a2a' }}>
-        <h2 style={{ fontSize:'16px', fontWeight:600, marginBottom:'12px', color:'#34d399' }}>お問い合わせフォーム</h2>
-        
-        <form onSubmit={handleSubmit} style={{ display:'grid', gap:'12px' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
-            <div>
-              <label style={{ display:'block', fontSize:'12px', fontWeight:600, color:'#d1d5db', marginBottom:'8px' }}>お名前 *</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                required
-                style={{ width:'100%', padding:'8px 12px', backgroundColor:'#1f2937', border:'1px solid #4b5563', borderRadius:'6px', color:'#fff', outline:'none' }}
-                placeholder="名前"
-              />
-            </div>
-            
-            <div>
-              <label style={{ display:'block', fontSize:'12px', fontWeight:600, color:'#d1d5db', marginBottom:'8px' }}>メールアドレス *</label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                style={{ width:'100%', padding:'8px 12px', backgroundColor:'#1f2937', border:'1px solid #4b5563', borderRadius:'6px', color:'#fff', outline:'none' }}
-                placeholder="example@email.com"
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label style={{ display:'block', fontSize:'12px', fontWeight:600, color:'#d1d5db', marginBottom:'8px' }}>件名</label>
-            <input
-              type="text"
-              name="subject"
-              value={formData.subject}
-              onChange={handleInputChange}
-              style={{ width:'100%', padding:'8px 12px', backgroundColor:'#1f2937', border:'1px solid #4b5563', borderRadius:'6px', color:'#fff', outline:'none' }}
-              placeholder="件名"
-            />
-          </div>
-          
-          <div>
-            <label style={{ display:'block', fontSize:'12px', fontWeight:600, color:'#d1d5db', marginBottom:'8px' }}>メッセージ *</label>
-            <textarea
-              name="message"
-              value={formData.message}
-              onChange={handleInputChange}
-              required
-              rows={4}
-              style={{ width:'100%', padding:'8px 12px', backgroundColor:'#1f2937', border:'1px solid #4b5563', borderRadius:'6px', color:'#fff', outline:'none', resize:'none' }}
-              placeholder="お問い合わせ内容をご記入ください"
-            />
-          </div>
-          
-          <button type="submit" style={{ width:'100%', backgroundColor:'#2563eb', color:'#fff', fontWeight:600, padding:'10px 16px', borderRadius:'6px', border:'none', cursor:'pointer' }}>
-            送信
-          </button>
-        </form>
-        <p style={{ fontSize:'12px', color:'#9ca3af', marginTop:'8px' }}>* 送信によりメールクライアントが起動します</p>
-      </div>
-
-      {/* 現在の状況 */}
-      <div style={{ borderTop:'1px solid #4b5563', paddingTop:'16px' }}>
-        <h2 style={{ fontSize:'16px', fontWeight:600, marginBottom:'12px', color:'#f59e0b' }}>Current status</h2>
-        <div style={{ backgroundColor:'#1f2937', borderRadius:'8px', padding:'16px' }}>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px', fontSize:'14px' }}>
-            <div>
-              <h4 style={{ fontWeight:600, color:'#34d399', marginBottom:'8px' }}>Available</h4>
-              <ul style={{ display:'grid', gap:'4px', color:'#e5e7eb' }}>
-                <li>技術相談・プロジェクト協力等の問い合わせに対応可能</li>
-              </ul>
-            </div>
-            <div>
-              <h4 style={{ fontWeight:600, color:'#60a5fa', marginBottom:'8px' }}>Learning</h4>
-              <ul style={{ display:'grid', gap:'4px', color:'#e5e7eb' }}>
-                <li>ITパスポート（受験予定: 2025年9月）</li>
-                <li>Java / Spring Boot 等の学習継続</li>
-              </ul>
-            </div>
-          </div>
+            </>
+          )}
         </div>
       </div>
     </div>
