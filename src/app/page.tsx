@@ -47,14 +47,6 @@ const windowContent: { [key: string]: Omit<WindowState, 'id'> } = {
 export default function Home() {
   const [windows, setWindows] = useState<WindowState[]>([]);
 
-  const getWindowPosition = (index: number) => {
-    const offset = index * 50;
-    return {
-      x: 100 + offset,
-      y: 80 + offset
-    };
-  };
-
   const openWindow = (windowId: string) => {
     const content = windowContent[windowId];
     if (!content) return;

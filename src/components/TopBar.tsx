@@ -20,12 +20,6 @@ const TopBar = () => {
     minute: '2-digit',
   });
 
-  const formattedDate = currentTime.toLocaleDateString([], {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric'
-  });
-
   const dateTimeLabel = `${currentTime.getMonth() + 1}月${currentTime.getDate()}日 ${formattedTime}`;
 
   return (

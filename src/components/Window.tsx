@@ -41,8 +41,8 @@ const Window = ({ title, children, onClose, initialPosition, isMinimized = false
       // テキスト選択を完全に無効化
       document.body.style.userSelect = 'none';
       document.body.style.webkitUserSelect = 'none';
-      (document.body.style as any).mozUserSelect = 'none';
-      (document.body.style as any).msUserSelect = 'none';
+      (document.body.style as unknown as Record<string, string>).mozUserSelect = 'none';
+      (document.body.style as unknown as Record<string, string>).msUserSelect = 'none';
   document.body.style.cursor = 'move';
   document.body.classList.add('dragging');
     }
@@ -70,8 +70,8 @@ const Window = ({ title, children, onClose, initialPosition, isMinimized = false
     // テキスト選択を再有効化
     document.body.style.userSelect = '';
     document.body.style.webkitUserSelect = '';
-    (document.body.style as any).mozUserSelect = '';
-    (document.body.style as any).msUserSelect = '';
+    (document.body.style as unknown as Record<string, string>).mozUserSelect = '';
+    (document.body.style as unknown as Record<string, string>).msUserSelect = '';
   document.body.style.cursor = '';
   document.body.classList.remove('dragging');
   };
@@ -138,7 +138,7 @@ const Window = ({ title, children, onClose, initialPosition, isMinimized = false
         transformOrigin: 'top left',
         transformStyle: 'preserve-3d',
         willChange: 'transform',
-        transformBox: 'fill-box' as any,
+        transformBox: 'fill-box' as React.CSSProperties['transformBox'],
         opacity: isClosing ? 0 : 1,
         zIndex: 1000,
         backgroundColor: '#3c3c3c',
