@@ -278,9 +278,9 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
           {title}
         </span>
 
-        {/* Controls on the right - Windows style */}
-        <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0 }} onMouseDown={(e) => e.stopPropagation()}>
-          {/* 最小化ボタン */}
+        {/* Controls on the right - Ubuntu GNOME style */}
+        <div style={{ display: 'flex', alignItems: 'center', flexShrink: 0, gap: '6px', marginRight: '8px' }} onMouseDown={(e) => e.stopPropagation()}>
+          {/* 最小化ボタン - Ubuntu GNOME style */}
           <button
             title="Minimize"
             aria-label="Minimize"
@@ -288,28 +288,29 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
               display: 'inline-flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
-              width: '45px', 
-              height: '29px', 
-              background: 'transparent', 
+              width: '24px', 
+              height: '24px', 
+              background: 'rgba(255,255,255,0.08)', 
               border: 'none', 
+              borderRadius: '50%',
               color: '#ffffff', 
               cursor: 'pointer',
-              transition: 'background-color 0.1s ease'
+              transition: 'background-color 0.2s ease'
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)';
             }}
             onClick={() => { if (onMinimize) onMinimize(); }}
           >
-            <svg width="10" height="1" viewBox="0 0 10 1" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect width="10" height="1" fill="currentColor" />
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <line x1="3" y1="6" x2="9" y2="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </button>
 
-          {/* 最大化/復元ボタン */}
+          {/* 最大化/復元ボタン - Ubuntu GNOME style */}
           <button
             title={isMaximized ? "Restore Down" : "Maximize"}
             aria-label={isMaximized ? "Restore Down" : "Maximize"}
@@ -317,37 +318,38 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
               display: 'inline-flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
-              width: '45px', 
-              height: '29px', 
-              background: 'transparent', 
+              width: '24px', 
+              height: '24px', 
+              background: 'rgba(255,255,255,0.08)', 
               border: 'none', 
+              borderRadius: '50%',
               color: '#ffffff', 
               cursor: 'pointer',
-              transition: 'background-color 0.1s ease'
+              transition: 'background-color 0.2s ease'
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.1)';
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.15)';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)';
             }}
             onClick={() => { if (onToggleMaximize) onToggleMaximize(); }}
           >
             {isMaximized ? (
-              // 復元アイコン - 2つの重なる四角
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2" y="0" width="8" height="8" stroke="currentColor" strokeWidth="1" fill="none" />
-                <rect x="0" y="2" width="8" height="8" stroke="currentColor" strokeWidth="1" fill="none" />
+              // 復元アイコン - Ubuntu GNOME style: 2つの重なる四角
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="1" width="7" height="7" stroke="currentColor" strokeWidth="1.2" fill="none" />
+                <rect x="2" y="4" width="7" height="7" stroke="currentColor" strokeWidth="1.2" fill="none" />
               </svg>
             ) : (
-              // 最大化アイコン - 単一の四角
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="0" y="0" width="10" height="10" stroke="currentColor" strokeWidth="1" fill="none" />
+              // 最大化アイコン - Ubuntu GNOME style: 単一の四角
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="8" height="8" stroke="currentColor" strokeWidth="1.2" fill="none" />
               </svg>
             )}
           </button>
 
-          {/* 閉じるボタン */}
+          {/* 閉じるボタン - Ubuntu GNOME style */}
           <button
             title="Close"
             aria-label="Close"
@@ -355,26 +357,27 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
               display: 'inline-flex', 
               alignItems: 'center', 
               justifyContent: 'center', 
-              width: '45px', 
-              height: '29px', 
-              background: 'transparent', 
+              width: '24px', 
+              height: '24px', 
+              background: 'rgba(255,255,255,0.08)', 
               border: 'none', 
+              borderRadius: '50%',
               color: '#ffffff', 
               cursor: 'pointer',
-              transition: 'background-color 0.1s ease'
+              transition: 'background-color 0.2s ease, color 0.2s ease'
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = '#e81123';
+              e.currentTarget.style.backgroundColor = '#e53935';
               e.currentTarget.style.color = '#ffffff';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
+              e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)';
               e.currentTarget.style.color = '#ffffff';
             }}
             onClick={handleClose}
           >
-            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M0.5 0.5L9.5 9.5M0.5 9.5L9.5 0.5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="square"/>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 3L9 9M3 9L9 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </button>
         </div>

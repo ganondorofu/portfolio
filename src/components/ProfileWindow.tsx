@@ -8,6 +8,12 @@ const ProfileWindow: React.FC = () => {
   const [currentTypingLine, setCurrentTypingLine] = useState<string>('');
   const [isTyping, setIsTyping] = useState(false);
   const [demoRun, setDemoRun] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // クライアントサイドであることを確認
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // 一文字ずつタイピングする関数
   const typeText = async (text: string, delay: number = 50) => {
@@ -34,7 +40,7 @@ const ProfileWindow: React.FC = () => {
     const cmd = raw.trim();
     if (!cmd) return;
 
-    setDisplayedLines(prev => [...prev, `$ ${cmd}`]);
+    setDisplayedLines(prev => [...prev, `yoneyone@ubuntu:~$ ${cmd}`]);
 
     const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
     const parts = cmd.split(/\s+/);
@@ -76,42 +82,65 @@ const ProfileWindow: React.FC = () => {
   }, [mockFiles]);
 
   useEffect(() => {
-    if (demoRun) return;
+    // クライアントサイドでのみ実行
+    if (!isClient) return;
     
-    let mounted = true;
-    const sleep = (ms: number) => new Promise(res => setTimeout(res, ms));
-
-    const demo = async () => {
-      console.log('Starting terminal demo...'); // デバッグログ
-      setDemoRun(true);
-      await sleep(1000); // 少し長めの初期遅延
+    // 初期表示を保証するため、より確実な方法を使用
+    const initTerminal = async () => {
+      if (demoRun) return;
       
-      const seq = ['whoami', 'ls', 'cat about.txt'];
-      for (let i = 0; i < seq.length; i++) {
-        const cmd = seq[i];
-        if (!mounted) break;
-        console.log(`Running command: ${cmd}`); // デバッグログ
-        await runCommand(cmd);
-        if (i < seq.length - 1) { // 最後のコマンドでない場合のみ待機
-          await sleep(1200);
-        }
-      }
-      console.log('Terminal demo completed'); // デバッグログ
+      console.log('Initializing terminal...'); // デバッグログ
+      setDemoRun(true);
+      
+      // 初期遅延
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // 初期メッセージを直接表示
+      setDisplayedLines([
+        'Welcome to Ubuntu 22.04.3 LTS (GNU/Linux 5.15.0-91-generic x86_64)',
+        '',
+        'Last login: ' + new Date().toLocaleString(),
+        ''
+      ]);
+      
+      // デモコマンドの実行
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await runCommand('whoami');
+      
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      await runCommand('ls');
+      
+      await new Promise(resolve => setTimeout(resolve, 1200));
+      await runCommand('cat about.txt');
+      
+      console.log('Terminal initialization completed'); // デバッグログ
     };
 
-    demo().catch(err => {
-      console.error('Demo error:', err);
+    initTerminal().catch(err => {
+      console.error('Terminal initialization error:', err);
+      // エラーが発生した場合でも最低限の表示を確保
+      setDisplayedLines(['Terminal initialization failed. Type "help" for commands.']);
+      setDemoRun(true);
     });
-    
-    return () => { 
-      mounted = false; 
-    };
-  }, [demoRun, runCommand]); // runCommandを依存配列に追加
+  }, [isClient]); // isClientが変更されたときのみ実行
 
   const promptStyle: React.CSSProperties = { color: '#21d07a', marginRight: 8, fontWeight: 700 };
 
   // 行の色付け関数
   const renderLine = (line: string, index: number) => {
+    if (line.startsWith('yoneyone@ubuntu:~$ ')) {
+      return (
+        <div key={index} style={{ display: 'flex', alignItems: 'flex-start', gap: 0, marginBottom: 6 }}>
+          <div style={{ color: '#21d07a', fontWeight: 700 }}>yoneyone@ubuntu</div>
+          <div style={{ color: '#ffffff' }}>:</div>
+          <div style={{ color: '#569cd6' }}>~</div>
+          <div style={{ color: '#21d07a', fontWeight: 700, marginRight: 8 }}>$</div>
+          <div>{line.slice(19)}</div>
+        </div>
+      );
+    }
+
+    // 旧形式との互換性のため
     if (line.startsWith('$ ')) {
       return (
         <div key={index} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginBottom: 6 }}>
@@ -177,6 +206,16 @@ const ProfileWindow: React.FC = () => {
       <div style={{ flex: 1, padding: 12, overflow: 'auto', background: '#000' }}>
         <div style={{ maxWidth: '980px', margin: '0 auto' }}>
           <div style={{ fontFamily: 'monospace', color: '#d1d5db', whiteSpace: 'pre-wrap', lineHeight: 1.6, background: '#000', padding: 16, borderRadius: 8, border: '1px solid rgba(255,255,255,0.03)' }}>
+            {!isClient && (
+              <div style={{ color: '#666', fontStyle: 'italic' }}>
+                Loading terminal...
+              </div>
+            )}
+            {isClient && displayedLines.length === 0 && !isTyping && (
+              <div style={{ color: '#666', fontStyle: 'italic' }}>
+                Terminal initializing...
+              </div>
+            )}
             {displayedLines.map(renderLine)}
             {isTyping && currentTypingLine && renderTypingLine(currentTypingLine)}
           </div>
