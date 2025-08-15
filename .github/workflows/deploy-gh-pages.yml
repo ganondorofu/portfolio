@@ -3,6 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ main, master ]
+  workflow_dispatch: # 手動実行を可能にする
 
 permissions:
   contents: read
@@ -32,7 +33,23 @@ jobs:
 
       - name: Build and export static files
         run: npm run build
-        # Next.js 15 with output: 'export' automatically generates static files
+        env:
+          GITHUB_ACTIONS: true
+          NODE_ENV: production
+
+      - name: Add .nojekyll file
+        run: touch ./out/.nojekyll
+
+      - name: Check build output
+        run: |
+          echo "Checking build output directory..."
+          ls -la ./out/
+          echo "Checking for index.html..."
+          if [ -f "./out/index.html" ]; then
+            echo "✅ index.html found"
+          else
+            echo "❌ index.html not found"
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

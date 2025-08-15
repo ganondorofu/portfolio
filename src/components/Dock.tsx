@@ -11,6 +11,8 @@ const Dock = ({ onIconClick }: DockProps) => {
     { id: 'projects', icon: 'folder', label: 'Projects', color: '#7ED321' },
     { id: 'achievements', icon: 'award', label: 'Achievements', color: '#D0021B' },
     { id: 'contact', icon: 'mail', label: 'Contact', color: '#9013FE' },
+    { id: 'minesweeper', icon: 'bomb', label: 'Minesweeper', color: '#6366f1' },
+    { id: 'calculator', icon: 'calculator', label: 'Calculator', color: '#3b82f6' },
   ];
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -70,6 +72,36 @@ const Dock = ({ onIconClick }: DockProps) => {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect x="3" y="6" width="18" height="12" rx="2" fill="#ffffff" opacity="0.95"/>
               <path d="M3 8l9 6 9-6" stroke={color} strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+          </div>
+        );
+      case 'bomb':
+        return (
+          <div style={iconStyle}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="12" height="12" rx="1" fill="#ffffff" opacity="0.3"/>
+              <circle cx="6" cy="6" r="0.5" fill="#ff4444"/>
+              <circle cx="10" cy="6" r="0.5" fill="#ff4444"/>
+              <text x="6" y="11" fill="#ffffff" fontSize="4" textAnchor="middle">1</text>
+              <text x="10" y="11" fill="#ffffff" fontSize="4" textAnchor="middle">2</text>
+            </svg>
+          </div>
+        );
+      case 'calculator':
+        return (
+          <div style={iconStyle}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="2" width="16" height="20" rx="2" stroke="#ffffff" strokeWidth="1.5" fill="none" opacity="0.9"/>
+              <rect x="6" y="4" width="12" height="4" rx="1" fill="#ffffff" opacity="0.8"/>
+              <circle cx="8" cy="12" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="12" cy="12" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="16" cy="12" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="8" cy="16" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="12" cy="16" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="16" cy="16" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="8" cy="20" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="12" cy="20" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="16" cy="20" r="1" fill="#ffffff" opacity="0.7"/>
             </svg>
           </div>
         );
@@ -140,6 +172,39 @@ const Dock = ({ onIconClick }: DockProps) => {
             </svg>
           </div>
         );
+      case 'bomb':
+        return (
+          <div style={iconStyle}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="4" y="4" width="16" height="16" rx="2" fill="#ffffff" opacity="0.3"/>
+              <rect x="6" y="6" width="12" height="12" rx="1" fill="#ffffff" opacity="0.4"/>
+              <circle cx="9" cy="9" r="1" fill="#ff4444"/>
+              <circle cx="12" cy="9" r="1" fill="#ff4444"/>
+              <circle cx="15" cy="9" r="1" fill="#ff4444"/>
+              <text x="9" y="15" fill="#ffffff" fontSize="5" textAnchor="middle" fontFamily="monospace">1</text>
+              <text x="12" y="15" fill="#ffffff" fontSize="5" textAnchor="middle" fontFamily="monospace">2</text>
+              <text x="15" y="15" fill="#ffffff" fontSize="5" textAnchor="middle" fontFamily="monospace">3</text>
+            </svg>
+          </div>
+        );
+      case 'calculator':
+        return (
+          <div style={iconStyle}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="3" width="14" height="18" rx="2" stroke="#ffffff" strokeWidth="1.5" fill="none" opacity="0.9"/>
+              <rect x="7" y="5" width="10" height="3" rx="1" fill="#ffffff" opacity="0.8"/>
+              <circle cx="8" cy="11" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="12" cy="11" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="16" cy="11" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="8" cy="14" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="12" cy="14" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="16" cy="14" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="8" cy="17" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="12" cy="17" r="1" fill="#ffffff" opacity="0.7"/>
+              <circle cx="16" cy="17" r="1" fill="#ffffff" opacity="0.7"/>
+            </svg>
+          </div>
+        );
       default:
         return <div style={iconStyle}><span style={{color: '#fff'}}>{iconName}</span></div>;
     }
@@ -178,9 +243,9 @@ const Dock = ({ onIconClick }: DockProps) => {
         alignItems: 'center',
         justifyContent: 'space-between',
         padding: '12px 0',
-        zIndex: 9999, // Dockコンテナ自体も高いz-indexに
-        backgroundColor: 'rgba(20,20,20,0.8)',
-        borderRight: '1px solid rgba(255,255,255,0.04)',
+        zIndex: 99999, // Dockを最上位に設定
+        backgroundColor: 'rgba(20,20,20,0.95)',
+        borderRight: '1px solid rgba(255,255,255,0.1)',
         color: '#ffffff',
         fontFamily: 'Inter, system-ui, sans-serif'
       }}
@@ -221,10 +286,13 @@ const Dock = ({ onIconClick }: DockProps) => {
             onClick={(e) => e.stopPropagation()}
             style={{
               position: 'fixed',
-              inset: 0,
+              top: 0,
+              left: '64px',
+              right: 0,
+              bottom: 0,
               padding: '40px',
               background: 'linear-gradient(135deg, rgba(18,18,20,0.95) 0%, rgba(25,25,30,0.95) 100%)',
-              zIndex: 10000,
+              zIndex: 1500,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -252,7 +320,7 @@ const Dock = ({ onIconClick }: DockProps) => {
                   alignItems: 'center',
                   justifyContent: 'center',
                   transition: 'all 0.2s ease',
-                  zIndex: 10001
+                  zIndex: 1501
                 }}
                 onMouseOver={(e) => {
                   e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.2)';
@@ -450,7 +518,7 @@ const Dock = ({ onIconClick }: DockProps) => {
                 opacity: 0,
                 transition: 'opacity 0.2s',
                 pointerEvents: 'none',
-                zIndex: 1000,
+                zIndex: 1200,
                 whiteSpace: 'nowrap',
                 backgroundColor: '#1a1a1a',
                 color: '#ffffff',
