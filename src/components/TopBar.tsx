@@ -1,8 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 const TopBar = () => {
+  const { settings, isMobile } = useSettings();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -29,13 +31,13 @@ const TopBar = () => {
         top: 0,
         left: 0,
         right: 0,
-        height: '36px',
+        height: isMobile || settings.mobileMode ? '44px' : '36px',
         zIndex: 60,
         display: 'grid',
         gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
-        padding: '0 12px',
-        fontSize: '13px',
+        padding: isMobile || settings.mobileMode ? '0 16px' : '0 12px',
+        fontSize: isMobile || settings.mobileMode ? '14px' : '13px',
         backgroundColor: '#111214',
         color: '#ffffff',
         fontFamily: 'Inter, system-ui, sans-serif'

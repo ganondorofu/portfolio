@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 type DockProps = {
   onIconClick: (id: string) => void;
 };
 
 const Dock = ({ onIconClick }: DockProps) => {
+  const { settings, isMobile } = useSettings();
   const dockItems = [
     { id: 'about', icon: 'user', label: 'About Me', color: '#4A90E2' },
     { id: 'skills', icon: 'tools', label: 'Skills', color: '#F5A623' },
@@ -230,31 +232,70 @@ const Dock = ({ onIconClick }: DockProps) => {
     };
   }, []);
 
+  const getDockPosition = () => {
+    const isEffectivelyMobile = isMobile || settings.mobileMode;
+    
+    const baseStyle = {
+      position: 'fixed' as const,
+      width: isEffectivelyMobile ? '100%' : '64px',
+      height: isEffectivelyMobile ? '64px' : 'calc(100vh - 36px)',
+      display: 'flex',
+      flexDirection: (isEffectivelyMobile ? 'row' : 'column') as 'row' | 'column',
+      alignItems: 'center',
+      justifyContent: isEffectivelyMobile ? 'center' : 'space-between',
+      padding: isEffectivelyMobile ? '8px' : '12px 0',
+      zIndex: 99999,
+      backgroundColor: 'rgba(20,20,20,0.95)',
+      color: '#ffffff',
+      fontFamily: 'Inter, system-ui, sans-serif'
+    };
+
+    if (isEffectivelyMobile) {
+      return {
+        ...baseStyle,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        borderTop: '1px solid rgba(255,255,255,0.1)',
+      };
+    }
+
+    switch (settings.dockPosition) {
+      case 'right':
+        return {
+          ...baseStyle,
+          top: '36px',
+          right: 0,
+          borderLeft: '1px solid rgba(255,255,255,0.1)',
+        };
+      default: // 'left'
+        return {
+          ...baseStyle,
+          top: '36px',
+          left: 0,
+          borderRight: '1px solid rgba(255,255,255,0.1)',
+        };
+    }
+  };
+
   return (
     <aside
-      style={{
-        position: 'fixed',
-        top: '36px',
-        left: 0,
-        height: 'calc(100vh - 36px)',
-        width: '64px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '12px 0',
-        zIndex: 99999, // Dockを最上位に設定
-        backgroundColor: 'rgba(20,20,20,0.95)',
-        borderRight: '1px solid rgba(255,255,255,0.1)',
-        color: '#ffffff',
-        fontFamily: 'Inter, system-ui, sans-serif'
-      }}
+      style={getDockPosition()}
       ref={containerRef}
     >
-      {/* Ubuntu-style app launcher (top non-interactive) */}
+      {/* Ubuntu-style app launcher (clickable) */}
       <div>
           <div
-            aria-hidden
+            role="button"
+            tabIndex={0}
+            aria-label="Show Applications"
+            onClick={() => setShowApps(!showApps)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowApps(!showApps);
+              }
+            }}
             style={{
               width: '46px',
               height: '46px',
@@ -262,11 +303,21 @@ const Dock = ({ onIconClick }: DockProps) => {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              cursor: 'default',
-              backgroundColor: 'transparent',
+              cursor: 'pointer',
+              backgroundColor: showApps ? 'rgba(255,255,255,0.15)' : 'transparent',
               marginBottom: '6px',
               opacity: 0.9,
-              transition: 'opacity 0.12s ease'
+              transition: 'opacity 0.12s ease, background-color 0.12s ease'
+            }}
+            onMouseOver={(e) => {
+              if (!showApps) {
+                e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)';
+              }
+            }}
+            onMouseOut={(e) => {
+              if (!showApps) {
+                e.currentTarget.style.backgroundColor = 'transparent';
+              }
             }}
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useSettings } from '@/contexts/SettingsContext';
 
 type WindowProps = {
   title: string;
@@ -15,6 +16,7 @@ type WindowProps = {
 };
 
 const Window = ({ title, children, onClose, initialPosition, initialSize, isMinimized = false, isMaximized = false, onMinimize, onToggleMaximize }: WindowProps) => {
+  const { settings, isMobile } = useSettings();
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
   const [resizeDirection, setResizeDirection] = useState('');
@@ -22,9 +24,21 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
     initialPosition || { x: 150 + Math.random() * 200, y: 100 + Math.random() * 100 }
   );
   const [size, setSize] = useState(() => {
-    const defaultWidth = Math.min(800, window.innerWidth * 0.8);
-    const defaultHeight = Math.min(600, window.innerHeight * 0.8);
-    return initialSize || { width: defaultWidth, height: defaultHeight };
+    const isMobileDevice = typeof window !== 'undefined' && window.innerWidth <= 768;
+    const effectivelyMobile = isMobileDevice || (settings && settings.mobileMode);
+    
+    if (effectivelyMobile) {
+      // モバイルでは画面にフィットするサイズ
+      return initialSize || { 
+        width: Math.min(window.innerWidth - 20, 400), 
+        height: Math.min(window.innerHeight - 100, 500) 
+      };
+    } else {
+      // デスクトップ向けサイズ
+      const defaultWidth = Math.min(800, window.innerWidth * 0.8);
+      const defaultHeight = Math.min(600, window.innerHeight * 0.8);
+      return initialSize || { width: defaultWidth, height: defaultHeight };
+    }
   });
   const [isClosing, setIsClosing] = useState(false);
   const windowRef = useRef<HTMLDivElement>(null);
@@ -53,6 +67,28 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
       (document.body.style as unknown as Record<string, string>).mozUserSelect = 'none';
       (document.body.style as unknown as Record<string, string>).msUserSelect = 'none';
       document.body.style.cursor = 'move';
+      document.body.classList.add('dragging');
+    }
+  };
+
+  // タッチイベントハンドラー
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (!isMobile && !settings.mobileMode) return;
+    
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (windowRef.current && !isMaximized) {
+      setIsDragging(true);
+      const touch = e.touches[0];
+      const rect = windowRef.current.getBoundingClientRect();
+      dragOffsetRef.current = {
+        x: touch.clientX - rect.left,
+        y: touch.clientY - rect.top,
+      };
+      
+      document.body.style.userSelect = 'none';
+      document.body.style.webkitUserSelect = 'none';
       document.body.classList.add('dragging');
     }
   };
@@ -153,6 +189,34 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
     document.body.classList.remove('dragging');
   }, []);
 
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!isDragging && !isResizing) return;
+    
+    const touch = e.touches[0];
+    if (isDragging && targetRef.current) {
+      const newX = touch.clientX - dragOffsetRef.current.x;
+      const newY = touch.clientY - dragOffsetRef.current.y;
+      
+      const maxX = window.innerWidth - 200;
+      const maxY = window.innerHeight - 100;
+      
+      targetRef.current = {
+        x: Math.max(0, Math.min(newX, maxX)),
+        y: Math.max(0, Math.min(newY, maxY))
+      };
+    }
+  }, [isDragging, isResizing]);
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+    setIsResizing(false);
+    setResizeDirection('');
+    
+    document.body.style.userSelect = '';
+    document.body.style.webkitUserSelect = '';
+    document.body.classList.remove('dragging');
+  }, []);
+
   const handleClose = () => {
     setIsClosing(true);
     setTimeout(() => {
@@ -164,13 +228,21 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
     if (isDragging || isResizing) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleMouseUp);
+      
+      // タッチイベントサポート
+      if (isMobile || settings.mobileMode) {
+        document.addEventListener('touchmove', handleTouchMove);
+        document.addEventListener('touchend', handleTouchEnd);
+      }
     }
 
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
+  }, [isDragging, isResizing, handleMouseMove, handleMouseUp, handleTouchMove, handleTouchEnd, isMobile, settings.mobileMode]);
 
   // レスポンシブ対応 - 画面サイズ変更時にウィンドウサイズを調整
   useEffect(() => {
@@ -242,14 +314,16 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
         opacity: isClosing ? 0 : 1,
         zIndex: 1000,
         backgroundColor: '#3c3c3c',
-        border: isMaximized ? 'none' : '1px solid #464646',
-        borderRadius: isMaximized ? 0 : '8px',
-        color: '#ffffff'
+        border: 'none',
+        borderRadius: isMaximized ? 0 : '6px',
+        color: '#ffffff',
+        overflow: 'hidden'
       }}
     >
       {/* Windows-style Title Bar */}
       <div
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
         style={{ 
           height: '32px',
           display: 'flex',
@@ -258,9 +332,9 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
           padding: '0 16px 0 12px',
           cursor: 'move',
           backgroundColor: '#323232',
-          borderTopLeftRadius: '8px',
-          borderTopRightRadius: '8px',
-          borderBottom: '1px solid #464646',
+          borderTopLeftRadius: isMaximized ? 0 : '6px',
+          borderTopRightRadius: isMaximized ? 0 : '6px',
+          borderBottom: 'none',
           color: '#ffffff',
           userSelect: 'none',
           WebkitUserSelect: 'none'
@@ -386,12 +460,14 @@ const Window = ({ title, children, onClose, initialPosition, initialSize, isMini
       {/* Content */}
       <div 
         style={{ 
-          padding: '24px', 
+          padding: '0', 
           flexGrow: 1, 
           overflowY: 'auto',
           color: '#ffffff', 
-          backgroundColor: '#3c3c3c',
+          backgroundColor: 'transparent',
           maxHeight: `${size.height - 30}px`, // タイトルバーの高さを引く
+          borderBottomLeftRadius: isMaximized ? 0 : '6px',
+          borderBottomRightRadius: isMaximized ? 0 : '6px',
         }}
       >
         {children}

@@ -11,6 +11,8 @@ import AchievementsWindow from '@/components/AchievementsWindow';
 import ContactWindow from '@/components/ContactWindow';
 import MinesweeperWindow from '@/components/MinesweeperWindow';
 import CalculatorWindow from '@/components/CalculatorWindow';
+import SettingsWindow from '@/components/SettingsWindow';
+import { SettingsProvider, useSettings } from '@/contexts/SettingsContext';
 
 // Define the shape of a window object
 interface WindowState {
@@ -53,9 +55,14 @@ const windowContent: { [key: string]: Omit<WindowState, 'id'> } = {
     title: 'Calculator - Simple & Fast',
     content: <CalculatorWindow />,
   },
+  settings: {
+    title: 'Settings - Configuration',
+    content: <SettingsWindow />,
+  },
 };
 
-export default function Home() {
+function HomeContent() {
+  const { settings, isMobile } = useSettings();
   const [windows, setWindows] = useState<WindowState[]>([]);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -110,6 +117,8 @@ export default function Home() {
             return { width: 600, height: 700 };
           case 'calculator':
             return { width: 400, height: 600 };
+          case 'settings':
+            return { width: 700, height: 500 };
           default:
             return { width: 800, height: 600 };
         }
@@ -157,13 +166,20 @@ export default function Home() {
       {/* デスクトップアプリアイコン */}
       <div style={{
         position: 'absolute',
-        top: '80px',
-        left: '120px',
+        top: isMobile || settings.mobileMode ? '40px' : '80px',
+        left: isMobile || settings.mobileMode ? '20px' : 
+              (settings.dockPosition === 'right' ? '20px' : '120px'),
+        right: isMobile || settings.mobileMode ? '20px' : 
+               (settings.dockPosition === 'right' ? '120px' : 'auto'),
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, 80px)',
-        gap: '24px',
+        gridTemplateColumns: isMobile || settings.mobileMode ? 
+          'repeat(auto-fill, minmax(80px, 1fr))' : 'repeat(auto-fill, 80px)',
+        gap: isMobile || settings.mobileMode ? '16px' : '24px',
         padding: '20px',
-        zIndex: 1
+        paddingBottom: isMobile || settings.mobileMode ? '100px' : '20px',
+        zIndex: 1,
+        maxHeight: isMobile || settings.mobileMode ? 'calc(100vh - 120px)' : 'auto',
+        overflowY: isMobile || settings.mobileMode ? 'auto' : 'visible'
       }}>
         {/* About アプリアイコン */}
         <div
@@ -536,6 +552,14 @@ export default function Home() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <SettingsProvider>
+      <HomeContent />
+    </SettingsProvider>
   );
 }
 
